@@ -10,4 +10,6 @@ public interface ApplicationStatusHistoryRepository
     List<ApplicationStatusHistory> findByApplicationIdOrderByChangedAtAsc(
             Long applicationId
     );
+
+    void deleteByApplicationId(Long id);
 }

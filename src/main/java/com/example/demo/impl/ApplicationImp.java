@@ -167,6 +167,8 @@ public class ApplicationImp implements ApplicationService {
     @Override
     public void deleteApplication(Long id) {
         Application application = getApplicationById(id);
+
+        historyRepository.deleteByApplicationId(id);
         applicationRepository.delete(application);
     }
 

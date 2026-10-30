@@ -1,7 +1,6 @@
 plugins {
     java
     id("org.springframework.boot") version "3.5.6"
-    id("io.spring.dependency-management") version "1.1.7"
 }
 
 group = "ru.practice"
@@ -18,6 +17,7 @@ repositories {
 }
 
 dependencies {
+    implementation(platform("org.springframework.boot:spring-boot-dependencies:3.5.6"))
     // REST API
     implementation("org.springframework.boot:spring-boot-starter-web")
 
@@ -29,7 +29,7 @@ dependencies {
 
     // PostgreSQL
     runtimeOnly("org.postgresql:postgresql")
-
+    testImplementation(platform("org.testcontainers:testcontainers-bom:2.0.3"))
     // Миграции БД
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")
@@ -42,8 +42,8 @@ dependencies {
     testImplementation("org.mockito:mockito-core")
 
     // Интеграционные тесты с настоящей PostgreSQL в контейнере
-    testImplementation("org.testcontainers:junit-jupiter:1.21.3")
-    testImplementation("org.testcontainers:postgresql:1.21.3")
+    testImplementation("org.testcontainers:testcontainers-junit-jupiter:2.0.3")
+    testImplementation("org.testcontainers:testcontainers-postgresql:2.0.3")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
     implementation("org.springframework.boot:spring-boot-starter-security")
@@ -52,13 +52,33 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
 
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
+    compileOnly("org.projectlombok:lombok:1.18.42")
+    annotationProcessor("org.projectlombok:lombok:1.18.42")
 
-    testCompileOnly("org.projectlombok:lombok")
-    testAnnotationProcessor("org.projectlombok:lombok")
+    testCompileOnly("org.projectlombok:lombok:1.18.42")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.42")
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+tasks.register("printTestcontainersDetails") {
+    doLast {
+        val config = configurations.getByName("testRuntimeClasspath")
+
+        println("\n--- RESOLUTION STRATEGY ---")
+        println("Forced: ${config.resolutionStrategy.forcedModules}")
+
+        println("\n--- DEPENDENCY CONSTRAINTS ---")
+        config.allDependencyConstraints.forEach {
+            println("$it | version: ${it.version}")
+        }
+
+        println("\n--- RESOLVED TESTCONTAINERS ---")
+        config.resolvedConfiguration.resolvedArtifacts
+            .filter { it.moduleVersion.id.group == "org.testcontainers" }
+            .forEach {
+                println("${it.moduleVersion.id}")
+            }
+    }
 }
