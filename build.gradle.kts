@@ -1,6 +1,10 @@
 plugins {
-    java
+    id("java")
     id("org.springframework.boot") version "3.5.6"
+
+    id("org.jetbrains.kotlin.jvm") version "2.2.20"
+    id("org.jetbrains.kotlin.plugin.spring") version "2.2.20"
+    id("org.jetbrains.kotlin.plugin.jpa") version "2.2.20"
 }
 
 group = "ru.practice"
@@ -14,6 +18,17 @@ java {
 
 repositories {
     mavenCentral()
+}
+
+kotlin {
+    sourceSets {
+        main {
+            kotlin.srcDir("src/main/kotlin")
+        }
+        test {
+            kotlin.srcDir("src/test/kotlin")
+        }
+    }
 }
 
 dependencies {
@@ -57,6 +72,10 @@ dependencies {
 
     testCompileOnly("org.projectlombok:lombok:1.18.42")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.42")
+
+    // Kotlin
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib")
 }
 
 tasks.withType<Test> {
