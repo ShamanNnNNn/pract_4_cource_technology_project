@@ -1,3 +1,4 @@
+
 name: CI
 
 on:
@@ -28,3 +29,14 @@ jobs:
 
       - name: Build and test
         run: ./gradlew clean test bootJar
+
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: verify
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t demo12:ci .
