@@ -5,6 +5,7 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "2.2.20"
     id("org.jetbrains.kotlin.plugin.spring") version "2.2.20"
     id("org.jetbrains.kotlin.plugin.jpa") version "2.2.20"
+    id("jacoco")
 }
 
 group = "ru.practice"
@@ -99,5 +100,18 @@ tasks.register("printTestcontainersDetails") {
             .forEach {
                 println("${it.moduleVersion.id}")
             }
+    }
+    tasks.test {
+        finalizedBy(tasks.jacocoTestReport)
+    }
+
+    tasks.jacocoTestReport {
+        dependsOn(tasks.test)
+
+        reports {
+            xml.required.set(true)
+            html.required.set(true)
+            csv.required.set(false)
+        }
     }
 }
